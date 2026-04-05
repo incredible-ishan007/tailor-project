@@ -90,7 +90,7 @@ export default function ProfileCustomer() {
   const handleSearch = async () => {
     if (!form.emailid) { alert("Enter Email First"); return; }
     try {
-      const res = await axios.post("http://localhost:2007/customer/search", { emailid: form.emailid });
+      const res = await axios.post("http://tailor-project-backend.vercel.app/customer/search", { emailid: form.emailid });
       if (res.data.status) {
         const data = res.data.customer;
         setForm((prev) => ({
@@ -104,7 +104,7 @@ export default function ProfileCustomer() {
           profilepic: null,
           errors: {},
         }));
-        setProfilePreview(data.picurl ? `http://localhost:2007/uploads/${data.picurl}` : null);
+        setProfilePreview(data.picurl ? `http://tailor-project-backend.vercel.app/uploads/${data.picurl}` : null);
       }
     } catch (err) {
       alert("Customer Not Found");
@@ -120,7 +120,7 @@ export default function ProfileCustomer() {
     });
     if (form.profilepic) data.append("profilepic", form.profilepic);
     try {
-      const res = await axios.post("http://localhost:2007/customer/save", data);
+      const res = await axios.post("http://tailor-project-backend.vercel.app/customer/save", data);
       alert(res.data.msg);
       setProfilePreview(null);
       setForm({ emailid: "", name: "", address: "", city: "", state: "", gender: "", profilepic: null, errors: {} });
@@ -135,7 +135,7 @@ export default function ProfileCustomer() {
     });
     if (form.profilepic) data.append("profilepic", form.profilepic);
     try {
-      const res = await axios.post("http://localhost:2007/customer/update", data);
+      const res = await axios.post("http://tailor-project-backend.vercel.app/customer/update", data);
       alert(res.data.msg);
       if (form.profilepic) setProfilePreview(URL.createObjectURL(form.profilepic));
       setForm((prev) => ({ ...prev, profilepic: null }));

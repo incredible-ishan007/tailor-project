@@ -43,7 +43,7 @@ const MainLogin = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:2007/user/login",
+        "http://tailor-project-backend.vercel.app/user/login",
         {
           email: form.email,
           password: form.password,

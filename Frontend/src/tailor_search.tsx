@@ -24,7 +24,7 @@ export default function FindTailor() {
 
   useEffect(() => {
     const init = async () => {
-      const fRes = await axios.get("http://localhost:2007/tailor/get-filters");
+      const fRes = await axios.get("http://tailor-project-backend.vercel.app/tailor/get-filters");
       if (fRes.data.status) setFilters(fRes.data);
       handleSearch(); 
     };
@@ -34,7 +34,7 @@ export default function FindTailor() {
   const handleSearch = async () => {
     setLoading(true);
     setCurrentPage(1);
-    const res = await axios.post("http://localhost:2007/tailor/search-tailors", sel);
+    const res = await axios.post("http://tailor-project-backend.vercel.app/tailor/search-tailors", sel);
     if (res.data.status) setResults(res.data.results);
     setLoading(false);
   };
@@ -130,7 +130,7 @@ export default function FindTailor() {
                 key={t.emailid} className={`${theme.container} border p-5 rounded-4xl group hover:border-indigo-500/50 transition-all duration-500`}
               >
                 <div className="relative aspect-[1.3/1] rounded-2xl bg-black/40 mb-5 overflow-hidden">
-                  <img src={`http://localhost:2007/uploads/${t.profilepic}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <img src={`http://tailor-project-backend.vercel.app/uploads/${t.profilepic}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                   <div className="absolute top-3 right-3 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-[9px] font-black uppercase tracking-widest text-indigo-400">
                     {t.worktype || "Master"}
                   </div>
