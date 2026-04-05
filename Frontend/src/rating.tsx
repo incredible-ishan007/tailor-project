@@ -79,7 +79,7 @@ export default function TailorReview() {
           reviewText: form.reviewText
         };
 
-        const response = await axios.post("http://tailor-project-backend.vercel.app/customer/publish-review", reviewData);
+        const response = await axios.post("https://tailor-project-backend.vercel.app/customer/publish-review", reviewData);
 
         if (response.data.status === true) {
           alert("Review Published Successfully!");

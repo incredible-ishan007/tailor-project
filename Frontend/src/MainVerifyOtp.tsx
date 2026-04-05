@@ -34,7 +34,7 @@ const MainVerifyOtp = () => {
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://tailor-project-backend.vercel.app/user/verify-otp", {
+      const response = await axios.post("https://tailor-project-backend.vercel.app/user/verify-otp", {
         email,
         otp,
       });

@@ -111,7 +111,7 @@ export default function ProfileTailor() {
       data.append("aadharcard", file);
 
       try {
-        const res = await axios.post("http://tailor-project-backend.vercel.app/tailor/extract-aadhar", data);
+        const res = await axios.post("https://tailor-project-backend.vercel.app/tailor/extract-aadhar", data);
         if (res.data.status) {
           setForm(prev => ({
             ...prev,
@@ -152,7 +152,7 @@ export default function ProfileTailor() {
       else if (k !== "errors" && (form as any)[k]) data.append(k, (form as any)[k]);
     });
     try {
-      await axios.post("http://tailor-project-backend.vercel.app/tailor/save", data);
+      await axios.post("https://tailor-project-backend.vercel.app/tailor/save", data);
       alert("Profile synchronized.");
     } catch { alert("Sync failed."); }
   };

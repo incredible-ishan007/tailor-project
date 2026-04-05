@@ -43,7 +43,7 @@ const MainLogin = () => {
 
     try {
       const response = await axios.post(
-        "http://tailor-project-backend.vercel.app/user/login",
+        "https://tailor-project-backend.vercel.app/user/login",
         {
           email: form.email,
           password: form.password,
@@ -58,7 +58,7 @@ const MainLogin = () => {
 
       alert(response.data.msg);
 
-      // ✅ FIXED PART
+      // FIXED PART
       const role = localStorage.getItem("role");
 
       if (role === "tailor") {

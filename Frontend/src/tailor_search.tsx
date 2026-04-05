@@ -24,7 +24,7 @@ export default function FindTailor() {
 
   useEffect(() => {
     const init = async () => {
-      const fRes = await axios.get("http://tailor-project-backend.vercel.app/tailor/get-filters");
+      const fRes = await axios.get("https://tailor-project-backend.vercel.app/tailor/get-filters");
       if (fRes.data.status) setFilters(fRes.data);
       handleSearch(); 
     };
@@ -34,7 +34,7 @@ export default function FindTailor() {
   const handleSearch = async () => {
     setLoading(true);
     setCurrentPage(1);
-    const res = await axios.post("http://tailor-project-backend.vercel.app/tailor/search-tailors", sel);
+    const res = await axios.post("https://tailor-project-backend.vercel.app/tailor/search-tailors", sel);
     if (res.data.status) setResults(res.data.results);
     setLoading(false);
   };

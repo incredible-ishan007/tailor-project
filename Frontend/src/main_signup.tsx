@@ -70,7 +70,7 @@ const MainSignup = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://tailor-project-backend.vercel.app/user/signup", {
+      const response = await axios.post("https://tailor-project-backend.vercel.app/user/signup", {
         fullName: form.fullName,
         email: form.email,
         phone: form.phone,
