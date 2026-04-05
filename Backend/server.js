@@ -37,3 +37,5 @@ app.use((req, res) => {
         msg: "INVALID URL"
     });
 });
+
+module.exports=app;
