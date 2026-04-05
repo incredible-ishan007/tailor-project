@@ -1,4 +1,4 @@
-import React from "react";
+
 import { useNavigate, Outlet } from "react-router-dom";
 import { FaHome, FaUser, FaSearch, FaStar } from "react-icons/fa";
 
