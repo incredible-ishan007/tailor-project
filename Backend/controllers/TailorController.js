@@ -1,8 +1,9 @@
-const path = require("path");   // ✅ keep ONLY once
+const path = require("path");   
 const fs = require("fs");
 const TailorModel = require("../models/Tailor_profilepage");
 const Tesseract = require("tesseract.js");
 const cloudinary = require("cloudinary").v2;
+require('dotenv').config()
 
 async function doExtractAadhar(req, resp) {
     try {

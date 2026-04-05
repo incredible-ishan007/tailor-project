@@ -5,7 +5,6 @@ function validateToken(req, res, next) {
 
     const authHeader = req.headers['authorization'];
 
-    //  Check header
     if (!authHeader) {
         return res.status(401).json({
             status: false,
@@ -15,7 +14,6 @@ function validateToken(req, res, next) {
 
     console.log("Header:", authHeader);
 
-    // Check format "Bearer token"
     const parts = authHeader.split(" ");
     if (parts.length !== 2 || parts[0] !== "Bearer") {
         return res.status(401).json({
@@ -26,17 +24,16 @@ function validateToken(req, res, next) {
 
     const token = parts[1];
 
-    console.log("SECRET:", process.env.SEC_KEY);
+    // ✅ FIX: Change SEC_KEY to sec_key to match your Vercel dashboard
+    console.log("SECRET:", process.env.sec_key); 
 
     try {
-        //  Verify token
-        const decoded = jwt.verify(token, process.env.SEC_KEY);
+        // ✅ FIX: Use the lowercase variable here too
+        const decoded = jwt.verify(token, process.env.sec_key);
 
         console.log("Decoded:", decoded);
 
-        //  Attach user data to request (VERY IMPORTANT)
         req.user = decoded;
-
         next();
 
     } catch (err) {

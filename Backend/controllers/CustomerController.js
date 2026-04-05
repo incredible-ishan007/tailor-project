@@ -1,4 +1,5 @@
 var path = require("path");
+require('dotenv').config()
 var CustomerModel = require("../models/customer_profilepage");
 
 // ================= SAVE CUSTOMER =================

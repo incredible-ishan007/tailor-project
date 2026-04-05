@@ -1,3 +1,4 @@
+require('dotenv').config()
 const ReviewModel = require("../models/review_model"); 
 
 
