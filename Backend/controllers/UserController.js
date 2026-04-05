@@ -3,14 +3,16 @@ var UserSignup = require("../models/user_signup");
 const transporter = require("../config/mailer");
 const generateOTP = require("../utils/generateOtp");
 const jwt = require('jsonwebtoken');
+// --- NEW: Import the connection helper ---
+const { connectToMongoDB } = require("../config/dbconnect"); 
 require('dotenv').config();
-
 
 async function doUserSignup(req, resp) {
     try {
+        // --- NEW: Ensure DB is connected before query ---
+        await connectToMongoDB();
 
         const { fullName, email, phone, password, role } = req.body;
-
         const cleanEmail = email.trim().toLowerCase();
 
         const existingUser = await UserSignup.findOne({ email: cleanEmail });
@@ -20,12 +22,11 @@ async function doUserSignup(req, resp) {
                 status: false,
                 msg: "User already exists"
             });
-       }
+        }
 
         const otp = generateOTP();
-
-        let jtoken=jwt.sign({email:cleanEmail},process.env.sec_key,{expiresIn:"1m"});
-         console.log(jtoken);
+        let jtoken = jwt.sign({ email: cleanEmail }, process.env.sec_key, { expiresIn: "1m" });
+        console.log(jtoken);
 
         let objUserRef = new UserSignup({
             fullName,
@@ -36,8 +37,6 @@ async function doUserSignup(req, resp) {
             otp,
             otpExpiry: Date.now() + 10 * 60 * 1000,
         });
-
-        
 
         await objUserRef.save();
 
@@ -52,7 +51,7 @@ async function doUserSignup(req, resp) {
         resp.status(200).json({
             status: true,
             msg: "OTP sent to your email",
-            token:jtoken
+            token: jtoken
         });
 
     } catch (err) {
@@ -63,13 +62,12 @@ async function doUserSignup(req, resp) {
     }
 }
 
-
-
 async function verifyOtp(req, resp) {
     try {
+        // --- NEW: Ensure DB is connected before query ---
+        await connectToMongoDB();
 
         const { email, otp } = req.body;
-
         const cleanEmail = email.trim().toLowerCase();
 
         const user = await UserSignup.findOne({ email: cleanEmail });
@@ -107,12 +105,12 @@ async function verifyOtp(req, resp) {
     }
 }
 
-
 async function doUserLogin(req, resp) {
     try {
+        // --- NEW: Ensure DB is connected before query ---
+        await connectToMongoDB();
 
         const { email, password } = req.body;
-
         const cleanEmail = email.trim().toLowerCase();
 
         const user = await UserSignup.findOne({ email: cleanEmail });

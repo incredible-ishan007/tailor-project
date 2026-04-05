@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
-// 1. Ensure dotenv is loaded to read your MONGO_URI from .env
-require("dotenv").config();
+// Vercel handles envs automatically, but keeping this for local safety
+if (process.env.NODE_ENV !== 'production') {
+  require("dotenv").config();
+}
 
-// 2. Standard global caching pattern for Mongoose
 let cached = global.mongoose;
 
 if (!cached) {
@@ -12,38 +13,27 @@ if (!cached) {
 async function connectToMongoDB() {
   const MONGO_URI = process.env.MONGO_URI;
 
-  // 3. Validation
   if (!MONGO_URI) {
-    console.error("❌ Error: MONGO_URI is missing in .env file");
-    throw new Error("❌ MONGO_URI not found");
+    throw new Error("❌ MONGO_URI is missing in Vercel Environment Variables");
   }
 
-  // 4. Return existing connection if available
-  if (cached.conn) {
-    console.log("⚡ Using cached MongoDB connection");
-    return cached.conn;
-  }
+  if (cached.conn) return cached.conn;
 
-  // 5. If no promise exists, start the connection
   if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
-
-    console.log("⏳ Connecting to MongoDB Atlas...");
-
-    cached.promise = mongoose.connect(MONGO_URI, opts).then((mongooseInstance) => {
-      console.log("✅ MongoDB Connected Successfully!");
+    // REMOVED bufferCommands: false to prevent the crash
+    cached.promise = mongoose.connect(MONGO_URI, {
+      connectTimeoutMS: 10000, // Give it 10 seconds to wake up
+    }).then((mongooseInstance) => {
+      console.log("✅ MongoDB Connected");
       return mongooseInstance;
     });
   }
 
   try {
     cached.conn = await cached.promise;
-  } catch (err) {
-    cached.promise = null; // Reset promise on error so we can try again
-    console.error("❌ MongoDB Connection Error:", err.message);
-    throw err;
+  } catch (e) {
+    cached.promise = null; 
+    throw e;
   }
 
   return cached.conn;
