@@ -1,8 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { motion} from "framer-motion";
-import { FaUser, FaEnvelope, FaLock, FaPhoneAlt, FaEye, FaEyeSlash, FaCheckCircle, FaSun, FaMoon } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { 
+  FaUser, FaEnvelope, FaLock, FaPhoneAlt, FaEye, FaEyeSlash, 
+  FaSun, FaMoon, FaStar, FaCut, FaArrowRight 
+} from "react-icons/fa";
 
 interface SignupErrors {
   fullName?: string;
@@ -35,6 +38,7 @@ const MainSignup = () => {
     errors: {},
   });
 
+  // LOGIC REMAINS UNTOUCHED
   const validateField = (name: string, value: string | null) => {
     if (name === "fullName" && !value?.trim()) return "Full name required";
     if (name === "email") {
@@ -77,164 +81,171 @@ const MainSignup = () => {
         password: form.password,
         role: form.role,
       });
-    let jwt=response.data.token;
-    localStorage.setItem("token",jwt);
-
+      let jwt = response.data.token;
+      localStorage.setItem("token", jwt);
       alert(response.data.msg);
-    navigate("/verify", { 
-  state: { email: form.email,role: form.role  }});
+      navigate("/verify", { 
+        state: { email: form.email, role: form.role }
+      });
     } catch (error: any) {
       alert(error.response?.data?.msg || "Registration Failed");
     }
   };
 
+  // NEW SYNCED THEME
   const theme = {
-    canvas: isDark
-      ? "bg-gradient-to-br from-[#0a0a0f] via-[#0f0f17] to-[#0a0a0f]"
-      : "bg-gradient-to-br from-[#f8fafc] via-[#eef2ff] to-[#f1f5f9]",
-    container: isDark
-      ? "bg-white/[0.03] border-white/10 backdrop-blur-3xl"
-      : "bg-white/60 border-white/40 backdrop-blur-3xl shadow-[0_10px_50px_rgba(0,0,0,0.05)]",
-    textMain: isDark ? "text-white" : "text-slate-900",
-    textMuted: isDark ? "text-zinc-400" : "text-slate-500",
-    input: "w-full bg-transparent border-b py-3 text-md font-light outline-none transition-all duration-500 focus:scale-[1.01]",
-    inputBorder: isDark ? "border-white/10 focus:border-indigo-500/80" : "border-slate-300 focus:border-indigo-500",
-    panel: isDark ? "bg-white/[0.02] backdrop-blur-xl" : "bg-white/50 backdrop-blur-xl",
-    button: "bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 hover:from-indigo-500 hover:to-violet-500 shadow-[0_20px_60px_rgba(99,102,241,0.4)]",
+    canvas: isDark ? "bg-[#050505] text-[#e5e5e5]" : "bg-[#faf9f7] text-[#1a1a1a]",
+    card: isDark 
+      ? "bg-white/[0.03] border-white/[0.08] backdrop-blur-2xl" 
+      : "bg-white/90 border-black/[0.05] shadow-xl backdrop-blur-2xl",
+    textMuted: isDark ? "text-zinc-500" : "text-slate-400",
+    accent: "#d4af37",
+    input: `w-full bg-transparent border-b py-4 text-sm font-light outline-none transition-all duration-500 focus:scale-[1.01]`,
+    inputBorder: isDark ? "border-white/10 focus:border-[#d4af37]" : "border-black/10 focus:border-[#d4af37]",
   };
 
   return (
-    <div className={`min-h-screen ${theme.canvas} transition-all duration-700 flex items-center justify-center p-6 relative overflow-hidden`}>
-      {/* Background Orbs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className={`absolute top-25 left-25 w-150 h-150 rounded-full blur-[160px] opacity-20 ${isDark ? "bg-indigo-600" : "bg-indigo-300"}`} />
-        <div className={`absolute bottom-30 right-30 w-125 h-125 rounded-full blur-[140px] opacity-10 ${isDark ? "bg-violet-500" : "bg-pink-200"}`} />
-      </div>
+    <div className={`min-h-screen ${theme.canvas} transition-colors duration-1000 font-sans selection:bg-[#d4af37]/30 flex items-center justify-center p-4 md:p-8 overflow-x-hidden relative`}>
+      
+      {/* NOISE OVERLAY - SAME AS LANDING */}
+      <div className="fixed inset-0 opacity-[0.015] pointer-events-none z-[100] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+      
+      {/* BACKGROUND ELEMENTS */}
+      <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-[#d4af37]/5 blur-[120px] rounded-full" />
+      <div className="absolute bottom-1/4 -right-20 w-[400px] h-[400px] bg-[#d4af37]/5 blur-[100px] rounded-full" />
 
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`relative w-full max-w-7xl ${theme.container} border rounded-[2.5rem] shadow-[0_40px_120px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col lg:flex-row z-10`}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className={`relative w-full max-w-6xl ${theme.card} border rounded-[3rem] overflow-hidden flex flex-col lg:grid lg:grid-cols-12 z-10 shadow-2xl`}
       >
-        {/* Theme Switcher */}
-        <div className="absolute top-8 right-8 z-30">
-          <button onClick={() => setIsDark(!isDark)} className="px-5 py-2 rounded-full border border-white/20 backdrop-blur-md hover:scale-105 transition">
-            {isDark ? <FaSun className="text-white" /> : <FaMoon className="text-slate-900" />}
-          </button>
-        </div>
+        {/* THEME TOGGLE */}
+        <button 
+          onClick={() => setIsDark(!isDark)} 
+          className="absolute top-8 right-8 p-3 rounded-full hover:bg-white/5 transition-colors z-50 border border-white/5"
+        >
+          {isDark ? <FaSun className="text-[#d4af37]" /> : <FaMoon />}
+        </button>
 
-        {/* Left Side: Branding */}
-        <div className={`w-full lg:w-[40%] p-12 lg:p-20 flex flex-col justify-center border-r border-white/10 ${theme.panel}`}>
-          <h1 className={`text-6xl lg:text-8xl font-black tracking-tighter ${theme.textMain} leading-[0.85]`}>
-            Start Your<br />
-            <span className="font-extralight italic opacity-30">Atelier</span>
-          </h1>
-          <div className="h-1 w-12 bg-indigo-600 mt-12 rounded-full"></div>
-          
-          <p className={`mt-10 text-sm font-medium leading-relaxed ${theme.textMuted} max-w-xs`}>
-            Join the elite circle of master tailors and fashion enthusiasts.
-          </p>
-
-          <div className="mt-16 space-y-6">
-            {['Global Craft Network', 'Secure Authentication'].map((text) => (
-              <div key={text} className="flex items-center gap-4">
-                <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500">
-                  <FaCheckCircle className="text-xs" />
-                </div>
-                <span className={`text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 ${theme.textMain}`}>{text}</span>
+        {/* LEFT: BRANDING SIDE (4 Cols) */}
+        <div className={`lg:col-span-5 p-12 md:p-16 flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r ${isDark ? 'border-white/5' : 'border-black/5'}`}>
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-16">
+              <div className="w-10 h-10 bg-[#d4af37] rounded-xl flex items-center justify-center">
+                <FaCut className="text-black text-sm" />
               </div>
-            ))}
+              <span className="font-serif text-xl font-bold tracking-tighter uppercase">Atelier<span className="font-light opacity-40">Sync</span></span>
+            </div>
+
+            <h1 className="text-5xl md:text-7xl font-serif leading-[0.9] tracking-tighter mb-8">
+              Join the <br />
+              <span className="italic font-light opacity-40">Collective.</span>
+            </h1>
+
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#d4af37]/30 bg-[#d4af37]/5 mb-8">
+              <FaStar className="text-[#d4af37] text-[8px]" />
+              <span className="text-[9px] font-black tracking-[0.3em] text-[#d4af37] uppercase">Elite Membership</span>
+            </div>
           </div>
+
+          <div className="relative z-10 space-y-4">
+            <p className={`text-sm font-light leading-relaxed ${theme.textMuted} max-w-xs`}>
+              "Everything begins with a single thread. Your journey to bespoke excellence starts here."
+            </p>
+            <div className="h-[1px] w-12 bg-[#d4af37]/40" />
+          </div>
+          
+          {/* Subtle Background Pattern for Left side */}
+          <FaCut className="absolute -bottom-10 -left-10 text-[250px] opacity-[0.02] -rotate-12" />
         </div>
 
-        {/* Right Side: Form */}
-        <div className="w-full lg:w-[60%] p-10 lg:p-20">
+        {/* RIGHT: FORM SIDE (7 Cols) */}
+        <div className="lg:col-span-7 p-10 md:p-20">
           <form onSubmit={handleSubmit} className="space-y-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
               
               {/* Full Name */}
-              <div className="col-span-2 relative group">
-                <label className={`text-[9px] font-black uppercase tracking-[0.3em] ${theme.textMuted} mb-2 block`}>Identity</label>
+              <div className="md:col-span-2 relative">
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-2 block">The Individual</label>
                 <div className="relative">
-                  <FaUser className="absolute left-0 top-4 opacity-20 text-indigo-500" />
+                  <FaUser className="absolute left-0 top-4 text-[#d4af37] opacity-40" />
                   <input
                     name="fullName"
                     value={form.fullName}
                     onChange={handleChange}
-                    placeholder="Master Name"
-                    className={`${theme.input} ${theme.inputBorder} ${theme.textMain} pl-8`}
+                    placeholder="FULL NAME"
+                    className={`${theme.input} ${theme.inputBorder} pl-8 uppercase tracking-widest`}
                   />
-                  {form.errors.fullName && <p className="absolute left-0 -bottom-5 text-[10px] text-rose-500 font-bold italic">{form.errors.fullName}</p>}
+                  {form.errors.fullName && <span className="text-[9px] text-red-500 absolute -bottom-5 left-0 italic">{form.errors.fullName}</span>}
                 </div>
               </div>
 
               {/* Email */}
-              <div className="relative group">
-                <label className={`text-[9px] font-black uppercase tracking-[0.3em] ${theme.textMuted} mb-2 block`}>Communication</label>
+              <div className="relative">
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-2 block">Correspondence</label>
                 <div className="relative">
-                  <FaEnvelope className="absolute left-0 top-4 opacity-20 text-indigo-500" />
+                  <FaEnvelope className="absolute left-0 top-4 text-[#d4af37] opacity-40" />
                   <input
                     name="email"
                     type="email"
                     value={form.email}
                     onChange={handleChange}
-                    placeholder="email@studio.com"
-                    className={`${theme.input} ${theme.inputBorder} ${theme.textMain} pl-8`}
+                    placeholder="EMAIL ADDRESS"
+                    className={`${theme.input} ${theme.inputBorder} pl-8 text-xs`}
                   />
-                  {form.errors.email && <p className="absolute left-0 -bottom-5 text-[10px] text-rose-500 font-bold italic">{form.errors.email}</p>}
                 </div>
               </div>
 
               {/* Phone */}
-              <div className="relative group">
-                <label className={`text-[9px] font-black uppercase tracking-[0.3em] ${theme.textMuted} mb-2 block`}>Contact</label>
+              <div className="relative">
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-2 block">Secure Line</label>
                 <div className="relative">
-                  <FaPhoneAlt className="absolute left-0 top-4 opacity-20 text-indigo-500" />
+                  <FaPhoneAlt className="absolute left-0 top-4 text-[#d4af37] opacity-40" />
                   <input
                     name="phone"
                     maxLength={10}
                     value={form.phone}
                     onChange={handleChange}
-                    placeholder="10-digit mobile"
-                    className={`${theme.input} ${theme.inputBorder} ${theme.textMain} pl-8`}
+                    placeholder="PHONE NUMBER"
+                    className={`${theme.input} ${theme.inputBorder} pl-8`}
                   />
-                  {form.errors.phone && <p className="absolute left-0 -bottom-5 text-[10px] text-rose-500 font-bold italic">{form.errors.phone}</p>}
                 </div>
               </div>
 
               {/* Password */}
-              <div className="col-span-2 relative group">
-                <label className={`text-[9px] font-black uppercase tracking-[0.3em] ${theme.textMuted} mb-2 block`}>Security</label>
+              <div className="md:col-span-2 relative">
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-2 block">Encryption Key</label>
                 <div className="relative">
-                  <FaLock className="absolute left-0 top-4 opacity-20 text-indigo-500" />
+                  <FaLock className="absolute left-0 top-4 text-[#d4af37] opacity-40" />
                   <input
                     name="password"
                     type={form.showPassword ? "text" : "password"}
                     value={form.password}
                     onChange={handleChange}
-                    placeholder="••••••••"
-                    className={`${theme.input} ${theme.inputBorder} ${theme.textMain} pl-8 pr-10`}
+                    placeholder="PASSWORD (MIN 8 CHARS)"
+                    className={`${theme.input} ${theme.inputBorder} pl-8 pr-10`}
                   />
-                  <button type="button" onClick={() => setForm(p => ({...p, showPassword: !p.showPassword}))} className="absolute right-0 top-4 text-slate-400 hover:text-indigo-500 transition">
+                  <button type="button" onClick={() => setForm(p => ({...p, showPassword: !p.showPassword}))} className="absolute right-0 top-4 opacity-40 hover:text-[#d4af37] transition-colors">
                     {form.showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
-                  {form.errors.password && <p className="absolute left-0 -bottom-5 text-[10px] text-rose-500 font-bold italic">{form.errors.password}</p>}
                 </div>
               </div>
             </div>
 
-            {/* Role Selection */}
-            <div className="pt-6">
-              <label className={`text-[9px] font-black uppercase tracking-[0.4em] ${theme.textMuted} text-center block mb-6`}>Select Persona</label>
+            {/* Role Selection - RE-STYLED TO MATCH MARQUEE VIBE */}
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 text-center block mb-6">Select Your Designation</label>
               <div className="flex gap-4">
                 {["customer", "tailor"].map((r) => (
                   <button
                     key={r}
                     type="button"
                     onClick={() => handleRoleChange(r as any)}
-                    className={`flex-1 py-5 rounded-2xl border-2 transition-all duration-500 text-[10px] font-black uppercase tracking-[0.2em] ${form.role === r 
-                      ? 'bg-indigo-600 border-indigo-600 text-white shadow-xl shadow-indigo-500/40' 
-                      : `bg-white/5 border-transparent ${theme.textMain} opacity-30 hover:opacity-100 hover:border-white/20`}`}
+                    className={`flex-1 py-4 rounded-xl border transition-all duration-500 text-[10px] font-black uppercase tracking-[0.3em] ${
+                      form.role === r 
+                        ? 'bg-[#d4af37] border-[#d4af37] text-black shadow-[0_10px_30px_rgba(212,175,55,0.2)]' 
+                        : `bg-transparent border-white/10 ${isDark ? 'text-white' : 'text-black'} opacity-40 hover:opacity-100`
+                    }`}
                   >
                     {r}
                   </button>
@@ -242,16 +253,23 @@ const MainSignup = () => {
               </div>
             </div>
 
-            {/* Submit Button */}
-            <div className="pt-10">
+            {/* Submit Button - SYNCED WITH LANDING BUTTON */}
+            <div className="pt-6">
               <motion.button 
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
                 type="submit" 
-                className={`w-full py-6 rounded-2xl text-white font-bold text-[11px] uppercase tracking-[0.5em] transition-all ${theme.button}`}
+                className="w-full group relative py-6 overflow-hidden rounded-2xl bg-[#d4af37] text-black font-bold text-[11px] uppercase tracking-[0.5em] shadow-lg transition-all"
               >
-                Create Account
+                <div className="flex items-center justify-center gap-3">
+                  <span>Initialize Account</span>
+                  <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+                </div>
               </motion.button>
+              
+              <p className="text-center mt-8 text-[10px] font-medium tracking-[0.1em] opacity-30">
+                Already have an account? <span className="underline cursor-pointer hover:text-[#d4af37]">Sign In</span>
+              </p>
             </div>
           </form>
         </div>

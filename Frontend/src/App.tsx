@@ -13,20 +13,17 @@ import FindTailor from "./tailor_search";
 import TailorReview from "./rating";
 
 import TailorProfile from "./tailor_profile";
+import LandingPage from "./first";
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-
-        {/*  ENTRY */}
+      {/* <Routes>
         <Route path="/" element={<MainSignup />} />
 
-        {/* AUTH */}
         <Route path="/verify" element={<MainVerifyOtp />} />
         <Route path="/login" element={<MainLogin />} />
 
-        {/*  PROTECT USER ROUTES */}
         <Route
           path="/user"
           element={
@@ -41,7 +38,6 @@ function App() {
           <Route path="ratings" element={<TailorReview />} />
         </Route>
 
-        {/*  PROTECT TAILOR ROUTES */}
         <Route
           path="/tailor"
           element={
@@ -54,7 +50,11 @@ function App() {
           <Route path="tailor_profile" element={<TailorProfile />} />
         </Route>
 
-      </Routes>
+      </Routes> */}
+      {/* <LandingPage></LandingPage> */}
+      {/* <MainSignup></MainSignup> */}
+      {/* <MainLogin></MainLogin> */}
+      <MainVerifyOtp></MainVerifyOtp>
     </BrowserRouter>
   );
 }
