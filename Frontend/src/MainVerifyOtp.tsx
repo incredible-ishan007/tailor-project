@@ -8,9 +8,8 @@ const MainVerifyOtp = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
 
-  // LOGIC PRESERVED EXACTLY
   const emailFromSignup = location.state?.email || "";
   const roleFromSignup = location.state?.role || ""; 
 
@@ -18,12 +17,12 @@ const MainVerifyOtp = () => {
   const [otp, setOtp] = useState("");
 
   const theme = {
-    canvas: isDark ? "bg-[#050505] text-[#e5e5e5]" : "bg-[#faf9f7] text-[#1a1a1a]",
+    canvas: isDark ? "bg-[#050505] text-[#e5e5e5]" : "bg-[#fbf9f5] text-[#1a1a1a]",
     card: isDark 
-      ? "bg-[#0a0a0a] border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)]" 
-      : "bg-white border-black/5 shadow-2xl",
-    textMuted: isDark ? "text-zinc-400" : "text-slate-500",
-    inputBorder: isDark ? "border-white/20 focus:border-[#d4af37]" : "border-black/10 focus:border-[#d4af37]",
+      ? "bg-white/[0.03] border-white/[0.08] backdrop-blur-3xl shadow-2xl" 
+      : "bg-white/80 border-black/[0.08] shadow-2xl backdrop-blur-3xl",
+    textMuted: isDark ? "text-zinc-500" : "text-zinc-600",
+    inputBorder: isDark ? "border-white/10 focus:border-[#d4af37]" : "border-black/15 focus:border-[#d4af37]",
   };
 
   const handleVerify = async (e: React.FormEvent) => {
@@ -34,9 +33,26 @@ const MainVerifyOtp = () => {
         otp,
       });
 
-      alert(response.data.msg);
-      localStorage.setItem("role", roleFromSignup);
-      navigate("/login");
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
+
+      const activeRole = response.data.role || roleFromSignup;
+      if (activeRole) {
+        localStorage.setItem("role", activeRole);
+      }
+
+      alert(response.data.msg || "Verification successful!");
+
+      if (response.data.token) {
+        if (activeRole === "tailor") {
+          navigate("/tailor");
+        } else {
+          navigate("/user");
+        }
+      } else {
+        navigate("/login");
+      }
 
     } catch (error: any) {
       alert(error.response?.data?.msg || "Verification failed");
@@ -45,8 +61,12 @@ const MainVerifyOtp = () => {
 
   return (
     <div className={`min-h-screen ${theme.canvas} transition-colors duration-1000 flex items-center justify-center p-4 md:p-8 overflow-hidden relative font-sans selection:bg-[#d4af37]/30`}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        .font-serif { font-family: 'Cormorant Garamond', serif !important; }
+        .font-sans { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+      `}</style>
       
-      {/* Background Polish */}
       <div className="fixed inset-0 opacity-[0.015] pointer-events-none z-[100] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
       <div className={`absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full blur-[120px] opacity-10 ${isDark ? "bg-[#d4af37]" : "bg-[#d4af37]/40"}`} />
 
@@ -55,10 +75,8 @@ const MainVerifyOtp = () => {
         animate={{ opacity: 1, y: 0 }}
         className={`relative w-full max-w-xl ${theme.card} border rounded-[3rem] overflow-hidden z-10 p-8 md:p-16`}
       >
-        {/* Subtle Branding Watermark */}
         <FaCut className="absolute -top-10 -right-10 text-[200px] opacity-[0.02] rotate-45 pointer-events-none" />
 
-        {/* Theme Toggle */}
         <div className="absolute top-8 right-8">
           <button 
             onClick={() => setIsDark(!isDark)}
@@ -68,7 +86,6 @@ const MainVerifyOtp = () => {
           </button>
         </div>
 
-        {/* Navigation Back */}
         <button 
           onClick={() => navigate(-1)} 
           className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] ${theme.textMuted} hover:text-[#d4af37] transition-colors mb-16`}
@@ -76,7 +93,6 @@ const MainVerifyOtp = () => {
           <FaArrowLeft className="text-[8px]" /> Return to Studio
         </button>
 
-        {/* Header */}
         <div className="mb-16">
           <div className="flex items-center gap-2 mb-4">
              <div className="h-[1px] w-8 bg-[#d4af37]" />
@@ -89,8 +105,6 @@ const MainVerifyOtp = () => {
         </div>
 
         <form onSubmit={handleVerify} className="space-y-14 relative z-10">
-          
-          {/* Email Display (Read-only) */}
           <div className="relative group opacity-80">
             <label className="text-[9px] font-black uppercase tracking-[0.4em] mb-3 block opacity-40">
               Authentication Path
@@ -101,12 +115,11 @@ const MainVerifyOtp = () => {
                 type="email"
                 value={email}
                 disabled
-                className="w-full bg-transparent py-4 pl-8 text-xs tracking-widest font-light outline-none cursor-not-allowed uppercase"
+                className="w-full bg-transparent py-4 pl-8 text-xs tracking-widest font-light outline-none cursor-not-allowed lowercase"
               />
             </div>
           </div>
 
-          {/* OTP Input */}
           <div className="relative group">
             <div className="flex justify-between items-center mb-3">
               <label className="text-[9px] font-black uppercase tracking-[0.4em] text-[#d4af37]">
@@ -135,7 +148,6 @@ const MainVerifyOtp = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
           <div className="pt-8">
             <motion.button 
               whileHover={{ y: -2 }}
@@ -146,12 +158,10 @@ const MainVerifyOtp = () => {
               <div className="flex items-center justify-center gap-4">
                 <span>Authorize Access</span>
               </div>
-              {/* Shine Effect */}
               <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine" />
             </motion.button>
           </div>
 
-          {/* Security Footer */}
           <div className="flex items-center justify-center gap-3 pt-4">
               <FaShieldAlt className="text-[#d4af37] text-[10px] opacity-40" />
               <span className="text-[8px] font-bold uppercase tracking-[0.5em] opacity-20">

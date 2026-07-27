@@ -16,20 +16,21 @@ import TailorProfile from "./tailor_profile";
 import LandingPage from "./first";
 
 function App() {
+  const isUserAuthenticated = () => Boolean(localStorage.getItem("token"));
+  const getUserRole = () => localStorage.getItem("role");
+
   return (
     <BrowserRouter>
-      {/* <Routes>
-        <Route path="/" element={<MainSignup />} />
-
-        <Route path="/verify" element={<MainVerifyOtp />} />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/signup" element={<MainSignup />} />
         <Route path="/login" element={<MainLogin />} />
+        <Route path="/verify-otp" element={<MainVerifyOtp />} />
 
         <Route
           path="/user"
           element={
-            localStorage.getItem("role")
-              ? <NavBarMain />
-              : <Navigate to="/" />
+            isUserAuthenticated() ? <NavBarMain /> : <Navigate to="/login" replace />
           }
         >
           <Route index element={<UserHome />} />
@@ -41,20 +42,19 @@ function App() {
         <Route
           path="/tailor"
           element={
-            localStorage.getItem("role") === "tailor"
-              ? <TailorNavBar />
-              : <Navigate to="/" />
+            isUserAuthenticated() && getUserRole() === "tailor" ? (
+              <TailorNavBar />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         >
           <Route index element={<UserHome />} />
           <Route path="tailor_profile" element={<TailorProfile />} />
         </Route>
 
-      </Routes> */}
-      {/* <LandingPage></LandingPage> */}
-      {/* <MainSignup></MainSignup> */}
-      {/* <MainLogin></MainLogin> */}
-      <MainVerifyOtp></MainVerifyOtp>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </BrowserRouter>
   );
 }

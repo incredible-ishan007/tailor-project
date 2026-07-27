@@ -8,7 +8,7 @@ interface LoginState { email: string; password: string; showPassword: boolean; }
 
 const MainLogin = () => {
   const navigate = useNavigate();
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
   const [form, setForm] = useState<LoginState>({
     email: "",
     password: "",
@@ -16,13 +16,13 @@ const MainLogin = () => {
   });
 
   const theme = {
-    canvas: isDark ? "bg-[#050505] text-[#e5e5e5]" : "bg-[#faf9f7] text-[#1a1a1a]",
+    canvas: isDark ? "bg-[#050505] text-[#e5e5e5]" : "bg-[#fbf9f5] text-[#1a1a1a]",
     card: isDark 
-      ? "bg-white/[0.02] border-white/[0.08] backdrop-blur-3xl" 
-      : "bg-white border-black/[0.05] shadow-2xl backdrop-blur-3xl",
-    textMuted: isDark ? "text-zinc-500" : "text-slate-400",
+      ? "bg-white/[0.03] border-white/[0.08] backdrop-blur-3xl shadow-2xl" 
+      : "bg-white/80 border-black/[0.08] shadow-2xl backdrop-blur-3xl",
+    textMuted: isDark ? "text-zinc-500" : "text-zinc-600",
     input: `w-full bg-transparent border-b py-4 text-sm font-light outline-none transition-all duration-500 focus:scale-[1.01]`,
-    inputBorder: isDark ? "border-white/10 focus:border-[#d4af37]" : "border-black/10 focus:border-[#d4af37]",
+    inputBorder: isDark ? "border-white/10 focus:border-[#d4af37]" : "border-black/15 focus:border-[#d4af37]",
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,27 +32,51 @@ const MainLogin = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let token = localStorage.getItem("token");
     try {
-      const response = await axios.post("https://tailor-project-backend.vercel.app/user/login", 
-        { email: form.email, password: form.password },
-        { headers: { "Content-Type": "application/x-www-form-urlencoded", authorization: `Bearer ${token}` } }
+      const cleanEmail = form.email.trim().toLowerCase();
+      const response = await axios.post(
+        "https://tailor-project-backend.vercel.app/user/login", 
+        { email: cleanEmail, password: form.password }
       );
-      alert(response.data.msg);
-      const role = localStorage.getItem("role");
-      role === "tailor" ? navigate("/tailor") : navigate("/user");
+
+      const token = response.data.token || response.data.jwt;
+      if (token) {
+        localStorage.setItem("token", token);
+      }
+      
+      const rawRole = response.data.role || response.data.user?.role || "";
+      const normalizedRole = rawRole.toString().toLowerCase();
+
+      if (normalizedRole) {
+        localStorage.setItem("role", normalizedRole);
+      }
+
+      alert(response.data.msg || response.data.message || "Login Successful!");
+
+      const activeRole = normalizedRole || (localStorage.getItem("role") || "").toLowerCase();
+
+      if (activeRole === "tailor") {
+        navigate("/tailor");
+      } else if (activeRole === "customer" || activeRole === "user") {
+        navigate("/user");
+      } else {
+        navigate("/user");
+      }
     } catch (error: any) {
-      alert(error.response?.data?.msg || "Login Failed");
+      alert(error.response?.data?.msg || error.response?.data?.message || "Login Failed");
     }
   };
 
   return (
     <div className={`min-h-screen ${theme.canvas} transition-colors duration-1000 flex items-center justify-center p-4 md:p-8 overflow-hidden relative font-sans selection:bg-[#d4af37]/30`}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        .font-serif { font-family: 'Cormorant Garamond', serif !important; }
+        .font-sans { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+      `}</style>
       
-      {/* Texture Overlays */}
-      <div className="fixed inset-0 opacity-[0.02] pointer-events-none z-[100] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+      <div className="fixed inset-0 opacity-[0.015] pointer-events-none z-[100] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
       
-      {/* Radial Glows */}
       <div className={`absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full blur-[140px] opacity-20 ${isDark ? "bg-[#d4af37]/10" : "bg-[#d4af37]/20"}`} />
 
       <motion.div 
@@ -60,19 +84,16 @@ const MainLogin = () => {
         animate={{ opacity: 1, scale: 1 }}
         className={`relative w-full max-w-6xl ${theme.card} border rounded-[2.5rem] overflow-hidden flex flex-col lg:grid lg:grid-cols-12 z-10`}
       >
-        
-        {/* Toggle Theme */}
         <div className="absolute top-8 right-8 z-50">
           <button onClick={() => setIsDark(!isDark)} className={`p-3 rounded-xl border transition-all ${isDark ? 'border-white/10 hover:bg-white/5' : 'border-black/10 hover:bg-black/5'}`}>
             {isDark ? <FaSun className="text-[#d4af37]" /> : <FaMoon className="text-zinc-600" />}
           </button>
         </div>
 
-        {/* LEFT PANEL: Rich Branding & Content */}
         <div className={`lg:col-span-5 p-12 lg:p-16 flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r ${isDark ? 'border-white/5 bg-white/[0.01]' : 'border-black/5 bg-black/[0.01]'}`}>
           
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-16">
+            <div className="flex items-center gap-3 mb-16 cursor-pointer" onClick={() => navigate("/")}>
               <div className="w-12 h-12 bg-[#d4af37] rounded-2xl flex items-center justify-center shadow-[0_10px_25px_rgba(212,175,55,0.3)]">
                 <FaCut className="text-black text-lg" />
               </div>
@@ -84,7 +105,6 @@ const MainLogin = () => {
               <span className="italic font-light opacity-30">Access.</span>
             </h1>
 
-            {/* Added Content to fill space */}
             <div className="space-y-6 mt-12">
               {[
                 { icon: <FaShieldAlt />, title: "Encrypted Studio", desc: "End-to-end craft security" },
@@ -108,25 +128,21 @@ const MainLogin = () => {
              </p>
           </div>
 
-          {/* Background Decorative Icon */}
           <FaCut className="absolute -bottom-16 -left-16 text-[300px] opacity-[0.03] -rotate-12 pointer-events-none" />
         </div>
 
-        {/* RIGHT PANEL: Focused Form */}
         <div className="lg:col-span-7 p-10 lg:p-24 flex flex-col justify-center relative">
           
-          {/* Subtle pattern for the right side */}
           <div className={`absolute inset-0 opacity-[0.03] pointer-events-none ${isDark ? 'invert' : ''}`} 
-               style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} 
+               style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3Cg%3E%3C/g%3E%3C/svg%3E")` }} 
           />
 
           <form onSubmit={handleSubmit} className="relative z-10 space-y-12">
             <div className="space-y-10">
-              {/* Identity Key */}
               <div className="relative group">
-                <label className="text-[9px] font-black uppercase tracking-[0.4em] opacity-40 mb-3 block">Authorization ID</label>
+                <label className="text-[9px] font-black uppercase tracking-[0.4em] opacity-50 mb-3 block">Authorization ID</label>
                 <div className="relative">
-                  <FaEnvelope className="absolute left-0 top-4 text-[#d4af37] opacity-40 group-focus-within:opacity-100 transition-opacity" />
+                  <FaEnvelope className="absolute left-0 top-4 text-[#d4af37]" />
                   <input
                     name="email"
                     type="email"
@@ -134,19 +150,18 @@ const MainLogin = () => {
                     value={form.email}
                     onChange={handleChange}
                     placeholder="EMAIL@ATELIER.COM"
-                    className={`${theme.input} ${theme.inputBorder} pl-10 text-xs tracking-[0.1em]`}
+                    className={`${theme.input} ${theme.inputBorder} pl-10 text-xs tracking-[0.1em] lowercase`}
                   />
                 </div>
               </div>
 
-              {/* Passcode */}
               <div className="relative group">
                 <div className="flex justify-between items-end mb-3">
-                  <label className="text-[9px] font-black uppercase tracking-[0.4em] opacity-40 block">Secure Passcode</label>
+                  <label className="text-[9px] font-black uppercase tracking-[0.4em] opacity-50 block">Secure Passcode</label>
                   <button type="button" className="text-[9px] font-bold uppercase tracking-widest text-[#d4af37] hover:tracking-[0.2em] transition-all">Reset Key</button>
                 </div>
                 <div className="relative">
-                  <FaLock className="absolute left-0 top-4 text-[#d4af37] opacity-40 group-focus-within:opacity-100 transition-opacity" />
+                  <FaLock className="absolute left-0 top-4 text-[#d4af37]" />
                   <input
                     name="password"
                     type={form.showPassword ? "text" : "password"}
@@ -159,7 +174,7 @@ const MainLogin = () => {
                   <button 
                     type="button" 
                     onClick={() => setForm(p => ({...p, showPassword: !p.showPassword}))} 
-                    className="absolute right-0 top-4 opacity-40 hover:text-[#d4af37] transition-colors"
+                    className="absolute right-0 top-4 opacity-50 hover:text-[#d4af37] transition-colors"
                   >
                     {form.showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
@@ -179,15 +194,18 @@ const MainLogin = () => {
                   <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
                 </div>
                 
-                {/* Button Shine Effect */}
                 <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine" />
               </motion.button>
               
-              <div className="mt-10 flex items-center justify-center gap-4">
-                <div className="h-[1px] w-8 bg-current opacity-10" />
-                <span className="text-[9px] font-bold tracking-[0.3em] opacity-20 uppercase">End of Transmission</span>
-                <div className="h-[1px] w-8 bg-current opacity-10" />
-              </div>
+              <p className="text-center mt-8 text-[10px] font-medium tracking-[0.1em] opacity-50">
+                Don't have an account?{" "}
+                <span 
+                  onClick={() => navigate("/signup")} 
+                  className="underline cursor-pointer hover:text-[#d4af37] opacity-100 font-bold"
+                >
+                  Sign Up
+                </span>
+              </p>
             </div>
           </form>
         </div>
